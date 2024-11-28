@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Flower Power</title>
+  <style>
+    h1 {
+      text-align: center;
+    }
+
+    canvas {
+      display: block;
+      margin: 20px auto;
+      border: 1px solid #ccc;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px auto;
+    }
+
+    .tool-button {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+      padding: 5px;
+      background: white;
+    }
+
+    .tool-button:hover {
+      border-color: #999;
+    }
+
+    .tool-button canvas {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      border: none;
+    }
+
+    .tool-button.selected {
+      border-color: #4CAF50;
+      border-width: 3px;
+      background-color: #f0f9f0;
+    }
+
+    .tool-button::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 5px 10px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      border-radius: 4px;
+      font-size: 14px;
+      white-space: pre-line;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+      margin-bottom: 5px;
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .tool-button:hover::after {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Flower Power</h1>
+  <canvas id="flowerCanvas" width="800" height="600"></canvas>
+  <div class="button-container">
+    <button class="tool-button" id="wateringCan"
+      data-tooltip="Water plants&#10;Waters the selected cell and its neighbors">
+      💧
+    </button>
+    <button class="tool-button" id="daisyButton"
+      data-tooltip="Plant a Daisy&#10;Grows quickly but needs regular watering">
+      <canvas id="daisyPreview"></canvas>
+    </button>
+    <button class="tool-button" id="roseButton"
+      data-tooltip="Plant a Rose&#10;Slow to grow but very hardy once established">
+      <canvas id="rosePreview"></canvas>
+    </button>
+    <button class="tool-button" id="sunflowerButton"
+      data-tooltip="Plant a Sunflower&#10;Fast growing and needs lots of water">
+      <canvas id="sunflowerPreview"></canvas>
+    </button>
+    <button class="tool-button" id="hydroangeaButton"
+      data-tooltip="Plant a Hydroangea&#10;Pulls water from nearby cells on each growth stage.\nWhile blooming, automatically waters all cells in its column.">
+      <canvas id="hydroangeaPreview"></canvas>
+    </button>
+  </div>
+</body>
+
+<script src="src/app.js" type="module"></script>
+
+</html>
