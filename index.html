@@ -74,6 +74,13 @@
       visibility: visible;
       opacity: 1;
     }
+
+    .raindrop-svg {
+      width: 40px;
+      height: 40px;
+      display: block;
+      margin: 5px auto;
+    }
   </style>
 </head>
 
@@ -83,7 +90,29 @@
   <div class="button-container">
     <button class="tool-button" id="wateringCan"
       data-tooltip="Water plants&#10;Waters the selected cell and its neighbors">
-      💧
+      <svg class="raindrop-svg" viewBox="0 0 24 24">
+        <path 
+          d="M12 2 L12 2 C12 2 18 8 18 14 C18 17.866 15.3137 21 12 21 C8.68629 21 6 17.866 6 14 C6 8 12 2 12 2 Z" 
+          fill="#4FA4F4"
+          stroke="#2E7BD6"
+          stroke-width="1"
+        >
+          <animate 
+            attributeName="d" 
+            dur="2s"
+            repeatCount="indefinite"
+            values="
+              M12 2 L12 2 C12 2 18 8 18 14 C18 17.866 15.3137 21 12 21 C8.68629 21 6 17.866 6 14 C6 8 12 2 12 2 Z;
+              M12 3 L12 3 C12 3 17 8.5 17 14 C17 17.866 14.7613 20.5 12 20.5 C9.23869 20.5 7 17.866 7 14 C7 8.5 12 3 12 3 Z;
+              M12 2 L12 2 C12 2 18 8 18 14 C18 17.866 15.3137 21 12 21 C8.68629 21 6 17.866 6 14 C6 8 12 2 12 2 Z"
+          />
+        </path>
+        <path 
+          d="M12 8 C14 10 15 12 15 14 C15 16.2091 13.6569 18 12 18 C10.3431 18 9 16.2091 9 14 C9 12 10 10 12 8"
+          fill="#85C6FF"
+          opacity="0.5"
+        />
+      </svg>
     </button>
     <button class="tool-button" id="daisyButton"
       data-tooltip="Plant a Daisy&#10;Grows quickly but needs regular watering">
@@ -104,6 +133,6 @@
   </div>
 </body>
 
-<script src="src/app.js" type="module"></script>
+<script src="/src/app.js" type="module"></script>
 
 </html>
