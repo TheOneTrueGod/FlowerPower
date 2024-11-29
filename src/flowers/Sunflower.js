@@ -10,41 +10,47 @@ export default class Sunflower extends BaseFlower {
 		super();
 		this.hue = 50;
 		this.saturation = 90;
-		this.tooltip = 'Plant a Sunflower\nFast growing and needs lots of water';
+		this.tooltip = 'Plant a Sunflower\nLights up the night';
 		this.stateConfig = {
 			[STATES.SEED]: {
-				totalWaterNeeded: 10,
+				totalWaterNeeded: 5,
 				growthTimeSeconds: 3,
+				minLightLevel: 0,
 			},
 			[STATES.SHOOT]: {
-				totalWaterNeeded: 10,
-				growthTimeSeconds: 5,
+				totalWaterNeeded: 5,
+				growthTimeSeconds: 3,
+				minLightLevel: 0,
 			},
 			[STATES.FLOWER]: {
 				totalWaterNeeded: 10,
-				growthTimeSeconds: 5,
+				growthTimeSeconds: 10,
+				minLightLevel: 50,
 			},
 			[STATES.BLOOMING]: {
 				totalWaterNeeded: 0,
 				growthTimeSeconds: 30,
+				minLightLevel: 80,
 			}
 		};
 	}
 
 	onRemove(x, y, gameGrid, plantState) {
-		// Remove sunlight effect from adjacent tiles
-		const adjacentCoords = getAdjacentCoords(x, y, gameGrid);
-		adjacentCoords.forEach(([adjX, adjY]) => {
-			gameGrid[adjY][adjX].removePlantEffect(x, y);
-		});
+		if (this.stateConfig[plantState].minLightLevel) {
+			// Remove sunlight effect from adjacent tiles
+			const adjacentCoords = getAdjacentCoords(x, y, gameGrid);
+			adjacentCoords.forEach(([adjX, adjY]) => {
+				gameGrid[adjY][adjX].removePlantEffect(x, y);
+			});
+		}
 	}
 
 	onAdd(x, y, gameGrid, plantState) {
-		if (plantState === 'blooming') {
+		if (this.stateConfig[plantState].minLightLevel) {
 			// Add sunlight effect to adjacent tiles
 			const adjacentCoords = getAdjacentCoords(x, y, gameGrid);
 			adjacentCoords.forEach(([adjX, adjY]) => {
-				const effect = new PlantEffect(x, y, PLANT_EFFECT_TYPES.MIN_LIGHT_LEVEL, SUNFLOWER_MIN_LIGHT_LEVEL);
+				const effect = new PlantEffect(x, y, PLANT_EFFECT_TYPES.MIN_LIGHT_LEVEL, this.stateConfig[plantState].minLightLevel);
 				gameGrid[adjY][adjX].addPlantEffect(effect);
 			});
 		}
