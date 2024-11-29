@@ -36,7 +36,7 @@ export default class GridCell {
 
         // Check if the plant should be removed
         if (this.plant.shouldBeRemoved) {
-          this.plant.onRemove(x, y, gameGrid);
+          flowerDef.onRemove(x, y, gameGrid, this.plant.state);
           this.plant = null;
         }
       }
@@ -81,8 +81,9 @@ export default class GridCell {
 
     // Show water level indicator if needed
     if (this.waterLevel > 0) {
-      ctx.fillStyle = `rgba(0, 0, 255, ${this.waterLevel / MAX_WATER_LEVEL / 2})`;
-      ctx.fillRect(x * width, y * height, width, height);
+      ctx.fillStyle = `rgba(0, 0, 255, ${this.waterLevel / MAX_WATER_LEVEL / 4 + 0.1})`;
+      const waterLevelHeight = height * 0.3 * this.waterLevel / MAX_WATER_LEVEL;
+      ctx.fillRect(x * width, y * height + (height - waterLevelHeight), width, waterLevelHeight);
     }
 
     // Draw plant if exists

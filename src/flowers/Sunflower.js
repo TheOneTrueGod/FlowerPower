@@ -1,26 +1,9 @@
 import BaseFlower from './BaseFlower.js';
 import { STATES } from '../flowers.js';
 import PlantEffect, { PLANT_EFFECT_TYPES } from '../PlantEffect.js';
+import { getAdjacentCoords } from '../gridUtils.js';
 
-// Helper function to get adjacent coordinates
-function getAdjacentCoords(x, y, gameGrid) {
-	const coords = [];
-	for (let dx = -1; dx <= 1; dx++) {
-		for (let dy = -1; dy <= 1; dy++) {
-			if (dx === 0 && dy === 0) continue;
-
-			const newX = x + dx;
-			const newY = y + dy;
-
-			// Check bounds
-			if (newX >= 0 && newX < gameGrid[0].length &&
-				newY >= 0 && newY < gameGrid.length) {
-				coords.push([newX, newY]);
-			}
-		}
-	}
-	return coords;
-}
+const SUNFLOWER_MIN_LIGHT_LEVEL = 80;
 
 export default class Sunflower extends BaseFlower {
 	constructor() {
@@ -61,7 +44,7 @@ export default class Sunflower extends BaseFlower {
 			// Add sunlight effect to adjacent tiles
 			const adjacentCoords = getAdjacentCoords(x, y, gameGrid);
 			adjacentCoords.forEach(([adjX, adjY]) => {
-				const effect = new PlantEffect(x, y, PLANT_EFFECT_TYPES.MIN_LIGHT_LEVEL, 50);
+				const effect = new PlantEffect(x, y, PLANT_EFFECT_TYPES.MIN_LIGHT_LEVEL, SUNFLOWER_MIN_LIGHT_LEVEL);
 				gameGrid[adjY][adjX].addPlantEffect(effect);
 			});
 		}
@@ -84,7 +67,7 @@ export default class Sunflower extends BaseFlower {
 
 	renderBlooming(ctx, x, y, cellWidth, cellHeight, growth) {
 		const brightness = 50 + growth / 4;
-		const size = (growth / 100 * 0.7 + 0.3) * Math.min(cellWidth, cellHeight);
+		const size = (0.8 - growth / 100 * 0.4) * Math.min(cellWidth, cellHeight);
 
 		ctx.fillStyle = `hsla(${this.hue}, ${this.saturation}%, ${brightness}%, 0.3)`;
 		this.drawFlowerShape(ctx, x, y, cellWidth, cellHeight, size * 1.2);

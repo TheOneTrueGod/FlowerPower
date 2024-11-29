@@ -5,9 +5,11 @@ export const TIME_STATES = {
   NIGHT: 'night'
 };
 
+const DAY_CYCLE_DURATION = 30_000 // 30 seconds
+
 export class TimeManager {
   constructor(config = {}) {
-    this.cycleDuration = config.cycleDuration || 30000; // 60 seconds in ms
+    this.cycleDuration = config.cycleDuration || DAY_CYCLE_DURATION; // 60 seconds in ms
     this.stateRatios = {
       [TIME_STATES.DAWN]: config.dawnRatio || 0.25,   // 20% of cycle
       [TIME_STATES.DAY]: config.dayRatio || 0.25,     // 40% of cycle

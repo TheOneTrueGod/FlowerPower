@@ -44,8 +44,8 @@ export default class BaseFlower {
     this.onAdd(x, y, gameGrid, newState);
   }
 
-  onRemove(x, y, gameGrid, plantState) {}
-  onAdd(x, y, gameGrid, plantState) {}
+  onRemove(x, y, gameGrid, plantState) { }
+  onAdd(x, y, gameGrid, plantState) { }
 
   renderSeed(ctx, x, y, cellWidth, cellHeight, growth) {
     const brightness = 30 + growth / 4;
@@ -70,7 +70,7 @@ export default class BaseFlower {
 
   renderBlooming(ctx, x, y, cellWidth, cellHeight, growth) {
     const brightness = 60 + growth / 4;
-    const size = (growth / 100 * 0.1 + 0.8) * Math.min(cellWidth, cellHeight);
+    const size = (0.8 - growth / 100 * 0.4) * Math.min(cellWidth, cellHeight);
     ctx.fillStyle = `hsl(${this.hue}, ${this.saturation}%, ${brightness}%)`;
     this.drawFlowerShape(ctx, x, y, cellWidth, cellHeight, size);
   }
@@ -108,35 +108,32 @@ export default class BaseFlower {
   }
 
   update(plant, waterLevel, sunlight, deltaTime) {
-    if (waterLevel > 0) {
-      const currentStateConfig = this.stateConfig[plant.state];
-      const waterNeeded = currentStateConfig.totalWaterNeeded;
-      const growthTimeMilliseconds = currentStateConfig.growthTimeSeconds * 1000;
+    const currentStateConfig = this.stateConfig[plant.state];
+    const waterNeeded = currentStateConfig.totalWaterNeeded;
+    const growthTimeMilliseconds = currentStateConfig.growthTimeSeconds * 1000;
 
-      const { waterUsedThisTick, growthThisTick } = getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, growthTimeMilliseconds, sunlight, deltaTime);
+    const { waterUsedThisTick, growthThisTick } = getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, growthTimeMilliseconds, sunlight, deltaTime);
 
-      plant.growth += growthThisTick;
+    plant.growth += growthThisTick;
 
-      if (plant.growth >= 100) {
-        const states = Object.values(STATES);
-        const currentIndex = states.indexOf(plant.state);
+    if (plant.growth >= 100) {
+      const states = Object.values(STATES);
+      const currentIndex = states.indexOf(plant.state);
 
-        if (currentIndex < states.length - 1) {
-          const oldState = plant.state;
-          plant.state = states[currentIndex + 1];
-          plant.growth = 0;
+      if (currentIndex < states.length - 1) {
+        const oldState = plant.state;
+        plant.state = states[currentIndex + 1];
+        plant.growth = 0;
 
-          // Mark that the state just changed and store the previous state
-          plant.stateJustChanged = true;
-          plant.previousState = oldState;
-        } else {
-          // Plant has completed its lifecycle
-          plant.shouldBeRemoved = true;
-        }
+        // Mark that the state just changed and store the previous state
+        plant.stateJustChanged = true;
+        plant.previousState = oldState;
+      } else {
+        // Plant has completed its lifecycle
+        plant.shouldBeRemoved = true;
       }
-
-      return waterUsedThisTick;
     }
-    return 0;
+
+    return waterUsedThisTick;
   }
 }

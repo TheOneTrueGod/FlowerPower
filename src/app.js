@@ -22,6 +22,10 @@ window.onload = () => {
   const canvas = document.getElementById('flowerCanvas');
   const ctx = canvas.getContext('2d');
 
+  // Prevent text selection on double click
+  canvas.style.userSelect = 'none';
+  canvas.addEventListener('mousedown', (e) => e.preventDefault());
+
   // Calculate cell size based on canvas dimensions
   const CELL_WIDTH = canvas.width / GRID_WIDTH;
   const CELL_HEIGHT = canvas.height / GRID_HEIGHT;
@@ -47,7 +51,7 @@ window.onload = () => {
       FLOWERS[flower].render(ctx, 0, 0, canvas.width, canvas.height, {
         type: flower,
         state: STATES.BLOOMING,
-        growth: 100,
+        growth: 0,
       });
     }
   });
