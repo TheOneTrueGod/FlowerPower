@@ -1,15 +1,13 @@
 import GridCell from './GridCell.js';
 import { ToolManager } from './tools.js';
 import { FLOWERS, STATES } from './flowers.js';
+import { TimeManager } from './TimeManager.js';
+import { GRID_HEIGHT, GRID_WIDTH } from './constants.js';
 
 // Initialize the tool manager
 const toolManager = new ToolManager();
 
 window.onload = () => {
-  // Define the game grid dimensions
-  const GRID_WIDTH = 20;
-  const GRID_HEIGHT = 15;
-
   // Initialize the game grid
   let gameGrid = [];
   for (let y = 0; y < GRID_HEIGHT; y++) {
@@ -76,17 +74,20 @@ window.onload = () => {
     }
   });
 
+  const timeManager = new TimeManager();
+
   // Add game state variables
   let lastTimestamp = 0;
   const FRAME_RATE = 60;
   const FRAME_INTERVAL = 1000 / FRAME_RATE;
 
   function updateGame(deltaTime) {
+    timeManager.update(deltaTime);
     // Update game logic here
     for (let y = 0; y < GRID_HEIGHT; y++) {
       for (let x = 0; x < GRID_WIDTH; x++) {
         const cell = gameGrid[y][x];
-        cell.gameTick(deltaTime, x, y, gameGrid);
+        cell.gameTick(deltaTime, x, y, gameGrid, timeManager);
       }
     }
   }

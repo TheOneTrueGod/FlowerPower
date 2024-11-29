@@ -1,10 +1,13 @@
 import { STATES } from "../flowers.js";
 
-function getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, growthTimeMilliseconds, deltaTime) {
+function getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, growthTimeMilliseconds, sunlight, deltaTime) {
+
+  const growthRateModifier = sunlight / 100
+
   if (waterNeeded === 0) {
-    return { waterUsedThisTick: 0, growthThisTick: deltaTime / growthTimeMilliseconds * 100 };
+    return { waterUsedThisTick: 0, growthThisTick: deltaTime / growthTimeMilliseconds * 100 * growthRateModifier };
   }
-  const waterUsedThisTick = Math.min(waterLevel, waterNeeded / growthTimeMilliseconds * deltaTime);
+  const waterUsedThisTick = Math.min(waterLevel, waterNeeded / growthTimeMilliseconds * deltaTime * growthRateModifier);
   const growthThisTick = waterUsedThisTick / waterNeeded * 100;
   return { waterUsedThisTick, growthThisTick };
 }
@@ -35,9 +38,14 @@ export default class BaseFlower {
     this.tooltip = 'A basic flower';
   }
 
-  onStateChange(oldState, newState) {
+  onStateChange(oldState, newState, x, y, gameGrid) {
     console.log(`${this.name} progressed from ${oldState} to ${newState}`);
+    this.onRemove(x, y, gameGrid, oldState);
+    this.onAdd(x, y, gameGrid, newState);
   }
+
+  onRemove(x, y, gameGrid, plantState) {}
+  onAdd(x, y, gameGrid, plantState) {}
 
   renderSeed(ctx, x, y, cellWidth, cellHeight, growth) {
     const brightness = 30 + growth / 4;
@@ -99,13 +107,13 @@ export default class BaseFlower {
     }
   }
 
-  update(plant, waterLevel, deltaTime) {
+  update(plant, waterLevel, sunlight, deltaTime) {
     if (waterLevel > 0) {
       const currentStateConfig = this.stateConfig[plant.state];
       const waterNeeded = currentStateConfig.totalWaterNeeded;
       const growthTimeMilliseconds = currentStateConfig.growthTimeSeconds * 1000;
 
-      const { waterUsedThisTick, growthThisTick } = getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, growthTimeMilliseconds, deltaTime);
+      const { waterUsedThisTick, growthThisTick } = getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, growthTimeMilliseconds, sunlight, deltaTime);
 
       plant.growth += growthThisTick;
 

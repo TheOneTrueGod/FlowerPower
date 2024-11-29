@@ -10,15 +10,15 @@ export default class Hydroangea extends BaseFlower {
         this.stateConfig = {
             [STATES.SEED]: {
                 totalWaterNeeded: 10,
-                growthTimeSeconds: 1.0,
+                growthTimeSeconds: 2.0,
             },
             [STATES.SHOOT]: {
                 totalWaterNeeded: 10,
-                growthTimeSeconds: 1.0,
+                growthTimeSeconds: 5.0,
             },
             [STATES.FLOWER]: {
                 totalWaterNeeded: 10,
-                growthTimeSeconds: 1.5,
+                growthTimeSeconds: 5,
             },
             [STATES.BLOOMING]: {
                 totalWaterNeeded: 0,
@@ -28,7 +28,7 @@ export default class Hydroangea extends BaseFlower {
     }
 
     onStateChange(oldState, newState, x, y, gameGrid) {
-        super.onStateChange(oldState, newState);
+        super.onStateChange(oldState, newState, x, y, gameGrid);
 
         if (newState === STATES.SHOOT) {
             // Pull water from adjacent cells

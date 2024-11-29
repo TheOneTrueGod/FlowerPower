@@ -1,19 +1,31 @@
+import { GRID_WIDTH } from './constants.js';
 import { FLOWERS } from './flowers.js';
+import { PLANT_EFFECT_TYPES } from './PlantEffect.js';
 
 const MAX_WATER_LEVEL = 20;
+const DEBUG_SHOW_SUNLIGHT = false;
 
 export default class GridCell {
   constructor() {
     this.waterLevel = 0;
     this.sunlight = 0;
     this.plant = null;
+    this.plantEffects = []
   }
 
-  gameTick(deltaTime, x, y, gameGrid) {
+  gameTick(deltaTime, x, y, gameGrid, timeManager) {
+    const minLightLevel = this.plantEffects.reduce((acc, effect) => {
+      if (effect.effectType === PLANT_EFFECT_TYPES.MIN_LIGHT_LEVEL) {
+        return Math.max(effect.effectValue, acc)
+      }
+      return acc
+    }, 0);
+
+    this.sunlight = Math.max(minLightLevel, timeManager.getLightLevelForColumn(x, GRID_WIDTH));
     if (this.hasPlant()) {
       const flowerDef = FLOWERS[this.plant.type];
       if (flowerDef) {
-        const waterConsumed = flowerDef.update(this.plant, this.waterLevel, deltaTime);
+        const waterConsumed = flowerDef.update(this.plant, this.waterLevel, this.sunlight, deltaTime);
         this.waterLevel = Math.max(0, this.waterLevel - waterConsumed);
 
         if (this.plant.stateJustChanged) {
@@ -24,10 +36,19 @@ export default class GridCell {
 
         // Check if the plant should be removed
         if (this.plant.shouldBeRemoved) {
+          this.plant.onRemove(x, y, gameGrid);
           this.plant = null;
         }
       }
     }
+  }
+
+  addPlantEffect(effect) {
+    this.plantEffects.push(effect);
+  }
+
+  removePlantEffect(sourceX, sourceY) {
+    this.plantEffects = this.plantEffects.filter(e => e.sourceX !== sourceX || e.sourceY !== sourceY);
   }
 
   hasPlant() {
@@ -70,6 +91,20 @@ export default class GridCell {
       if (flowerDef) {
         flowerDef.render(ctx, x, y, width, height, this.plant);
       }
+    }
+
+    if (this.sunlight < 100) {
+      const opacity = 0.4 * (1 - this.sunlight / 100);
+      ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+      ctx.fillRect(x * width, y * height, width, height);
+    }
+
+    if (DEBUG_SHOW_SUNLIGHT) {
+      // Draw sunlight level text
+      ctx.fillStyle = 'white';
+      ctx.font = '12px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(Math.round(this.sunlight), x * width + width / 2, y * height + height / 2);
     }
   }
 }

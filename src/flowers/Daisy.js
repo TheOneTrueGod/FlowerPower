@@ -27,8 +27,8 @@ export default class Daisy extends BaseFlower {
     };
   }
 
-  onStateChange(oldState, newState) {
-    super.onStateChange(oldState, newState);
+  onStateChange(oldState, newState, x, y, gameGrid) {
+    super.onStateChange(oldState, newState, x, y, gameGrid);
     switch (newState) {
       case STATES.SHOOT:
         console.log('Daisy sprouted!');
