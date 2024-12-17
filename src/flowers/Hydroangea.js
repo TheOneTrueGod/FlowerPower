@@ -1,9 +1,10 @@
 import BaseFlower from './BaseFlower.js';
-import { STATES } from '../flowers.js';
+import { STATES, FLOWER_TYPES } from '../flowers.js';
 
 export default class Hydroangea extends BaseFlower {
     constructor() {
         super();
+        this.type = FLOWER_TYPES.HYDROANGEA;
         this.hue = 200;  // Blue-ish color
         this.saturation = 70;
         this.tooltip = 'Plant a Hydroangea\nWhile blooming, automatically waters all cells in its column.';

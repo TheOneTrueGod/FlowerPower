@@ -29,15 +29,17 @@ export default class GridCell {
         this.waterLevel = Math.max(0, this.waterLevel - waterConsumed);
 
         if (this.plant.stateJustChanged) {
-          flowerDef.onStateChange(this.plant.previousState, this.plant.state, x, y, gameGrid);
+          flowerDef.onStateChange(this.plant.previousState, this.plant.state, x, y, gameGrid)
           delete this.plant.stateJustChanged;
           delete this.plant.previousState;
         }
 
         // Check if the plant should be removed
         if (this.plant.shouldBeRemoved) {
-          flowerDef.onRemove(x, y, gameGrid, this.plant.state);
+          const plant = this.plant
+          flowerDef.onRemove(x, y, gameGrid, plant.state)
           this.plant = null;
+          flowerDef.onExpire(x, y, gameGrid, plant.state);
         }
       }
     }

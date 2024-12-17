@@ -1,28 +1,29 @@
-import { STATES } from "../flowers.js";
+import { STATES, FLOWER_TYPES } from "../flowers.js";
 import BaseFlower from "./BaseFlower.js";
 
 export default class Rose extends BaseFlower {
   constructor() {
     super();
+    this.type = FLOWER_TYPES.ROSE;
     this.hue = 0;
     this.saturation = 90;
     this.tooltip = 'Plant a Rose\nSlow to grow but very hardy once established';
     this.stateConfig = {
       [STATES.SEED]: {
-        totalWaterNeeded: 20,
-        growthTimeSeconds: 15,
+        totalWaterNeeded: 1,
+        growthTimeSeconds: 1,
       },
       [STATES.SHOOT]: {
-        totalWaterNeeded: 25,
-        growthTimeSeconds: 20,
+        totalWaterNeeded: 1,
+        growthTimeSeconds: 1,
       },
       [STATES.FLOWER]: {
-        totalWaterNeeded: 30,
-        growthTimeSeconds: 25,
+        totalWaterNeeded: 1,
+        growthTimeSeconds: 1,
       },
       [STATES.BLOOMING]: {
-        totalWaterNeeded: 35,
-        growthTimeSeconds: 35,
+        totalWaterNeeded: 1,
+        growthTimeSeconds: 1,
       }
     };
   }

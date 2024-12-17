@@ -1,5 +1,5 @@
 import BaseFlower from './BaseFlower.js';
-import { STATES } from '../flowers.js';
+import { STATES, FLOWER_TYPES } from '../flowers.js';
 import PlantEffect, { PLANT_EFFECT_TYPES } from '../PlantEffect.js';
 import { getAdjacentCoords } from '../gridUtils.js';
 
@@ -8,6 +8,7 @@ const SUNFLOWER_MIN_LIGHT_LEVEL = 80;
 export default class Sunflower extends BaseFlower {
 	constructor() {
 		super();
+		this.type = FLOWER_TYPES.SUNFLOWER;
 		this.hue = 50;
 		this.saturation = 90;
 		this.tooltip = 'Plant a Sunflower\nLights up the night';

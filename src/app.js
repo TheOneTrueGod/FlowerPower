@@ -31,14 +31,14 @@ window.onload = () => {
   const CELL_HEIGHT = canvas.height / GRID_HEIGHT;
 
   // Initialize preview images for the flower buttons
-  const daisyPreview = document.getElementById('daisyPreview');
+  const lavenderPreview = document.getElementById('lavenderPreview');
   const rosePreview = document.getElementById('rosePreview');
   const sunflowerPreview = document.getElementById('sunflowerPreview');
   const hydroangeaPreview = document.getElementById('hydroangeaPreview');
 
   // Set canvas sizes for previews
   [
-    ['daisy', daisyPreview],
+    ['lavender', lavenderPreview],
     ['rose', rosePreview],
     ['sunflower', sunflowerPreview],
     ['hydroangea', hydroangeaPreview]

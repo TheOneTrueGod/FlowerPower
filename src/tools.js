@@ -2,7 +2,7 @@ import { FLOWERS } from './flowers.js';
 
 export const TOOLS = {
   WATERING_CAN: 'wateringCan',
-  DAISY: 'daisy',
+  LAVENDER: 'lavender',
   ROSE: 'rose',
   SUNFLOWER: 'sunflower',
   HYDROANGEA: 'hydroangea'
@@ -76,9 +76,9 @@ export class ToolManager {
         });
         break;
 
-      case 'daisyButton':
+      case 'lavenderButton':
         if (!cell.hasPlant()) {
-          cell.plantFlower('daisy');
+          cell.plantFlower('lavender');
         }
         break;
       case 'roseButton':

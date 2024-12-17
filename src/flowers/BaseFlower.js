@@ -1,4 +1,5 @@
 import { STATES } from "../flowers.js";
+import { PLANT_EFFECT_TYPES } from "../PlantEffect.js";
 
 function getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, growthTimeMilliseconds, sunlight, deltaTime) {
 
@@ -15,6 +16,7 @@ function getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, growthTi
 export default class BaseFlower {
   constructor() {
     this.name = this.constructor.name;
+    this.type = "base_flower"
     this.stateConfig = {
       [STATES.SEED]: {
         totalWaterNeeded: 15,
@@ -46,6 +48,13 @@ export default class BaseFlower {
 
   onRemove(x, y, gameGrid, plantState) { }
   onAdd(x, y, gameGrid, plantState) { }
+
+  onExpire(x, y, gameGrid, plantState) {
+    console.log('onExpire', x, y, gameGrid[y][x], plantState);
+    if (gameGrid[y][x].plantEffects.some(effect => effect.effectType === PLANT_EFFECT_TYPES.POLLINATED)) {
+      gameGrid[y][x].plantFlower(this.type)
+    }
+  }
 
   renderSeed(ctx, x, y, cellWidth, cellHeight, growth) {
     const brightness = 30 + growth / 4;
