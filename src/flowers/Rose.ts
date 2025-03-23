@@ -1,7 +1,9 @@
-import { STATES, FLOWER_TYPES } from "../flowers.js";
+import { FLOWER_STATES, FLOWER_TYPES } from "./flowers.js";
 import BaseFlower from "./BaseFlower.js";
+import { GameGrid } from "../gameGrid/types.js";
 
 export default class Rose extends BaseFlower {
+  type: FLOWER_TYPES;
   constructor() {
     super();
     this.type = FLOWER_TYPES.ROSE;
@@ -9,35 +11,35 @@ export default class Rose extends BaseFlower {
     this.saturation = 90;
     this.tooltip = 'Plant a Rose\nSlow to grow but very hardy once established';
     this.stateConfig = {
-      [STATES.SEED]: {
+      [FLOWER_STATES.SEED]: {
         totalWaterNeeded: 1,
         growthTimeSeconds: 1,
       },
-      [STATES.SHOOT]: {
+      [FLOWER_STATES.SHOOT]: {
         totalWaterNeeded: 1,
         growthTimeSeconds: 1,
       },
-      [STATES.FLOWER]: {
+      [FLOWER_STATES.FLOWER]: {
         totalWaterNeeded: 1,
         growthTimeSeconds: 1,
       },
-      [STATES.BLOOMING]: {
+      [FLOWER_STATES.BLOOMING]: {
         totalWaterNeeded: 1,
         growthTimeSeconds: 1,
       }
     };
   }
 
-  onStateChange(oldState, newState, x, y, gameGrid) {
+  onStateChange(oldState: FLOWER_STATES, newState: FLOWER_STATES, x: number, y: number, gameGrid: GameGrid) {
     super.onStateChange(oldState, newState, x, y, gameGrid);
     switch (newState) {
-      case STATES.SHOOT:
+      case FLOWER_STATES.SHOOT:
         console.log('Rose shoot has emerged!');
         break;
-      case STATES.FLOWER:
+      case FLOWER_STATES.FLOWER:
         console.log('Rose bud is forming!');
         break;
-      case STATES.BLOOMING:
+      case FLOWER_STATES.BLOOMING:
         console.log('Rose has opened its petals!');
         break;
     }

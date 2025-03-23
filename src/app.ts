@@ -1,7 +1,7 @@
-import GridCell from './GridCell.js';
+import GridCell from './gameGrid/GridCell.js';
 import { ToolManager } from './tools.js';
-import { FLOWERS, STATES } from './flowers.js';
-import { TimeManager } from './TimeManager.js';
+import { FLOWER_TYPES, FLOWERS, FLOWER_STATES } from './flowers/flowers.js';
+import { TimeManager } from './managers/TimeManager.js';
 import { GRID_HEIGHT, GRID_WIDTH } from './constants.js';
 
 // Initialize the tool manager
@@ -9,7 +9,7 @@ const toolManager = new ToolManager();
 
 window.onload = () => {
   // Initialize the game grid
-  let gameGrid = [];
+  let gameGrid: Array<Array<GridCell>> = [];
   for (let y = 0; y < GRID_HEIGHT; y++) {
     let row = [];
     for (let x = 0; x < GRID_WIDTH; x++) {
@@ -19,8 +19,11 @@ window.onload = () => {
   }
 
   // Get canvas and context
-  const canvas = document.getElementById('flowerCanvas');
-  const ctx = canvas.getContext('2d');
+  const canvas: HTMLCanvasElement | null = document.getElementById('flowerCanvas') as HTMLCanvasElement | null;
+  if (!canvas) {
+    throw new Error("Couldn't create canvas")
+  }
+  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
   // Prevent text selection on double click
   canvas.style.userSelect = 'none';
@@ -31,26 +34,31 @@ window.onload = () => {
   const CELL_HEIGHT = canvas.height / GRID_HEIGHT;
 
   // Initialize preview images for the flower buttons
-  const lavenderPreview = document.getElementById('lavenderPreview');
-  const rosePreview = document.getElementById('rosePreview');
-  const sunflowerPreview = document.getElementById('sunflowerPreview');
-  const hydroangeaPreview = document.getElementById('hydroangeaPreview');
+  const lavenderPreview = document.getElementById('lavenderPreview') as HTMLCanvasElement | null;
+  const rosePreview = document.getElementById('rosePreview') as HTMLCanvasElement | null;
+  const sunflowerPreview = document.getElementById('sunflowerPreview') as HTMLCanvasElement | null;
+  const hydroangeaPreview = document.getElementById('hydroangeaPreview') as HTMLCanvasElement | null;
 
   // Set canvas sizes for previews
-  [
-    ['lavender', lavenderPreview],
-    ['rose', rosePreview],
-    ['sunflower', sunflowerPreview],
-    ['hydroangea', hydroangeaPreview]
-  ].forEach(([flower, canvas]) => {
+  const canvasMap: Array<{ plantType: FLOWER_TYPES, canvas: HTMLCanvasElement | null }> = [
+    { plantType: FLOWER_TYPES.LAVENDER, canvas: lavenderPreview },
+    { plantType: FLOWER_TYPES.ROSE, canvas: rosePreview },
+    { plantType: FLOWER_TYPES.SUNFLOWER, canvas: sunflowerPreview },
+    { plantType: FLOWER_TYPES.HYDROANGEA, canvas: hydroangeaPreview }
+  ]
+
+  canvasMap.forEach(({ plantType, canvas }) => {
     if (canvas) {
       canvas.width = 50;
       canvas.height = 50;
 
       const ctx = canvas.getContext('2d');
-      FLOWERS[flower].render(ctx, 0, 0, canvas.width, canvas.height, {
-        type: flower,
-        state: STATES.BLOOMING,
+      if (!ctx) {
+        throw new Error("unable to get 2d context")
+      }
+      FLOWERS[plantType].render(ctx, 0, 0, canvas.width, canvas.height, {
+        type: plantType,
+        state: FLOWER_STATES.BLOOMING,
         growth: 0,
       });
     }
@@ -85,7 +93,7 @@ window.onload = () => {
   const FRAME_RATE = 60;
   const FRAME_INTERVAL = 1000 / FRAME_RATE;
 
-  function updateGame(deltaTime) {
+  function updateGame(deltaTime: number) {
     timeManager.update(deltaTime);
     // Update game logic here
     for (let y = 0; y < GRID_HEIGHT; y++) {
@@ -96,7 +104,7 @@ window.onload = () => {
     }
   }
 
-  function gameLoop(timestamp) {
+  function gameLoop(timestamp: number) {
     // Calculate delta time
     const deltaTime = timestamp - lastTimestamp;
 
@@ -113,6 +121,9 @@ window.onload = () => {
 
   function renderGrid() {
     // Clear canvas
+    if (!canvas) {
+      throw new Error("unable to get canvas")
+    }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Render each cell

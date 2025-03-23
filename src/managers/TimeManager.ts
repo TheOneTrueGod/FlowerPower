@@ -1,33 +1,52 @@
-export const TIME_STATES = {
-  DAWN: 'dawn',
-  DAY: 'day',
-  DUSK: 'dusk',
-  NIGHT: 'night'
+export enum TIME_STATES {
+  DAWN = 'dawn',
+  DAY = 'day',
+  DUSK = 'dusk',
+  NIGHT = 'night'
 };
 
-const DAY_CYCLE_DURATION = 30_000 // 30 seconds
+const DAY_CYCLE_DURATION = 30_000; // 30 seconds
+
+interface TimeManagerConfig {
+  cycleDuration?: number;
+  dawnRatio?: number;
+  dayRatio?: number;
+  duskRatio?: number;
+  nightRatio?: number;
+}
 
 export class TimeManager {
-  constructor(config = {}) {
+  cycleDuration: number;
+  stateRatios: Record<TIME_STATES, number>;
+  currentTime: number;
+  currentState: TIME_STATES;
+  ctx: CanvasRenderingContext2D;
+  width: number;
+  height: number;
+
+  constructor(config: TimeManagerConfig = {}) {
     this.cycleDuration = config.cycleDuration || DAY_CYCLE_DURATION; // 60 seconds in ms
     this.stateRatios = {
-      [TIME_STATES.DAWN]: config.dawnRatio || 0.25,   // 20% of cycle
-      [TIME_STATES.DAY]: config.dayRatio || 0.25,     // 40% of cycle
-      [TIME_STATES.DUSK]: config.duskRatio || 0.25,   // 20% of cycle
-      [TIME_STATES.NIGHT]: config.nightRatio || 0.25   // 20% of cycle
+      [TIME_STATES.DAWN]: config.dawnRatio || 0.25,   // 25% of cycle
+      [TIME_STATES.DAY]: config.dayRatio || 0.25,     // 25% of cycle
+      [TIME_STATES.DUSK]: config.duskRatio || 0.25,   // 25% of cycle
+      [TIME_STATES.NIGHT]: config.nightRatio || 0.25  // 25% of cycle
     };
 
     this.currentTime = 0;
     this.currentState = TIME_STATES.DAWN;
 
     // Get the canvas context for the time indicator
-    const canvas = document.getElementById('timeIndicator');
-    this.ctx = canvas.getContext('2d');
+    const canvas = document.getElementById('timeIndicator') as HTMLCanvasElement;
+    if (!canvas) {
+      throw new Error("Canvas element with id 'timeIndicator' not found");
+    }
+    this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     this.width = canvas.width;
     this.height = canvas.height;
   }
 
-  update(deltaTime) {
+  update(deltaTime: number) {
     this.currentTime = (this.currentTime + deltaTime) % this.cycleDuration;
     this.updateTimeState();
   }
@@ -39,7 +58,7 @@ export class TimeManager {
     for (const [state, ratio] of Object.entries(this.stateRatios)) {
       progressSum += ratio;
       if (cycleProgress <= progressSum) {
-        this.currentState = state;
+        this.currentState = state as TIME_STATES;
         break;
       }
     }
@@ -176,10 +195,14 @@ export class TimeManager {
   }
 
   // Helper function to interpolate between two colors
-  interpolateColor(color1, color2, factor) {
+  interpolateColor(color1: string, color2: string, factor: number): string {
     // Convert hex to RGB
     const c1 = this.hexToRgb(color1);
     const c2 = this.hexToRgb(color2);
+
+    if (!c1 || !c2) {
+      throw new Error('Invalid color format');
+    }
 
     // Interpolate each component
     const r = Math.round(c1.r + (c2.r - c1.r) * factor);
@@ -190,7 +213,7 @@ export class TimeManager {
   }
 
   // Helper function to convert hex color to RGB
-  hexToRgb(hex) {
+  hexToRgb(hex: string): { r: number, g: number, b: number } | null {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
       r: parseInt(result[1], 16),
@@ -200,15 +223,15 @@ export class TimeManager {
   }
 
   // Returns light level (0-1) for a specific grid column
-  getLightLevelForColumn(column, totalColumns) {
+  getLightLevelForColumn(column: number, totalColumns: number): number {
     const cycleProgress = this.currentTime / this.cycleDuration;
     const stateProgress = this.getStateProgress();
 
     switch (this.currentState) {
       case TIME_STATES.DAWN:
         // Light spreads from left to right
-        const brightStart = column / totalColumns * 0.5
-        const brightEnd = brightStart + 0.5
+        const brightStart = column / totalColumns * 0.5;
+        const brightEnd = brightStart + 0.5;
 
         return Math.min(100, Math.max(0, (stateProgress - brightStart) / (brightEnd - brightStart)) * 100);
 
@@ -217,8 +240,8 @@ export class TimeManager {
 
       case TIME_STATES.DUSK:
         // Light spreads from left to right
-        const darkStart = column / totalColumns * 0.5
-        const darkEnd = darkStart + 0.5
+        const darkStart = column / totalColumns * 0.5;
+        const darkEnd = darkStart + 0.5;
 
         return Math.min(100, Math.max(0, 100 - (stateProgress - darkStart) / (darkEnd - darkStart) * 100));
 
@@ -227,7 +250,7 @@ export class TimeManager {
     }
   }
 
-  getStateProgress() {
+  getStateProgress(): number {
     let progressInState = this.currentTime;
     for (const [state, ratio] of Object.entries(this.stateRatios)) {
       const stateDuration = ratio * this.cycleDuration;
@@ -239,7 +262,7 @@ export class TimeManager {
     return 0;
   }
 
-  getCurrentState() {
+  getCurrentState(): string {
     return this.currentState;
   }
-} 
+}
