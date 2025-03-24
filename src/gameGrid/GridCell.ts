@@ -109,7 +109,6 @@ export default class GridCell {
 
     // Draw plant if exists
     if (this.plant !== null) {
-      console.log("Plant exists")
       const flowerDef = FLOWERS[this.plant.type];
       if (flowerDef) {
         flowerDef.render(ctx, x, y, width, height, this.plant);

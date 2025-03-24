@@ -26,7 +26,6 @@ export class ToolManager {
   initializeTools() {
     // Add selected styling and tooltips
     const buttons = document.querySelectorAll('.tool-button');
-    debugger
     buttons.forEach(button => {
       // Set tooltip from appropriate source
       if (button.id === 'wateringCan') {
