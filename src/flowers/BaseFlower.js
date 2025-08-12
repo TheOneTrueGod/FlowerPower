@@ -14,8 +14,9 @@ function getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, growthTi
 }
 
 export default class BaseFlower {
-  constructor() {
+  constructor(abilities = []) {
     this.name = this.constructor.name;
+		this.abilities = abilities
     this.type = "base_flower"
     this.stateConfig = {
       [STATES.SEED]: {
@@ -46,14 +47,20 @@ export default class BaseFlower {
     this.onAdd(x, y, gameGrid, newState);
   }
 
-  onRemove(x, y, gameGrid, plantState) { }
-  onAdd(x, y, gameGrid, plantState) { }
+  onRemove(x, y, gameGrid, plantState) {
+		this.abilities.forEach((ability) => ability.onRemove(x, y, gameGrid, plantState))
+	}
+  onAdd(x, y, gameGrid, plantState) {
+		this.abilities.forEach((ability) => ability.onAdd(x, y, gameGrid, plantState))
+	}
 
   onExpire(x, y, gameGrid, plantState) {
     console.log('onExpire', x, y, gameGrid[y][x], plantState);
     if (gameGrid[y][x].plantEffects.some(effect => effect.effectType === PLANT_EFFECT_TYPES.POLLINATED)) {
       gameGrid[y][x].plantFlower(this.type)
     }
+
+		this.abilities.forEach((ability) => ability.onExpire(x, y, gameGrid, plantState))
   }
 
   renderSeed(ctx, x, y, cellWidth, cellHeight, growth) {

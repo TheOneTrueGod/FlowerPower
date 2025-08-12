@@ -2,12 +2,12 @@ import { GRID_WIDTH } from './constants.js';
 import { FLOWERS } from './flowers.js';
 import { PLANT_EFFECT_TYPES } from './PlantEffect.js';
 
-const MAX_WATER_LEVEL = 20;
 const DEBUG_SHOW_SUNLIGHT = false;
 
 export default class GridCell {
-  constructor() {
-    this.waterLevel = 0;
+	static MAX_WATER_LEVEL() { return 20 };
+  constructor(waterLevel = 0) {
+    this.waterLevel = waterLevel;
     this.sunlight = 0;
     this.plant = null;
     this.plantEffects = []
@@ -68,7 +68,7 @@ export default class GridCell {
   }
 
   water(amount) {
-    this.waterLevel = Math.min(this.waterLevel + amount, MAX_WATER_LEVEL);
+    this.waterLevel = Math.min(this.waterLevel + amount, GridCell.MAX_WATER_LEVEL());
   }
 
   render(ctx, x, y, width, height) {
@@ -83,8 +83,8 @@ export default class GridCell {
 
     // Show water level indicator if needed
     if (this.waterLevel > 0) {
-      ctx.fillStyle = `rgba(0, 0, 255, ${this.waterLevel / MAX_WATER_LEVEL / 4 + 0.1})`;
-      const waterLevelHeight = height * 0.3 * this.waterLevel / MAX_WATER_LEVEL;
+      ctx.fillStyle = `rgba(0, 0, 255, ${this.waterLevel / GridCell.MAX_WATER_LEVEL() / 4 + 0.1})`;
+      const waterLevelHeight = height * 0.3 * this.waterLevel / GridCell.MAX_WATER_LEVEL();
       ctx.fillRect(x * width, y * height + (height - waterLevelHeight), width, waterLevelHeight);
     }
 

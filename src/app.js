@@ -13,7 +13,9 @@ window.onload = () => {
   for (let y = 0; y < GRID_HEIGHT; y++) {
     let row = [];
     for (let x = 0; x < GRID_WIDTH; x++) {
-      row.push(new GridCell());
+			const waterLevel = (x === Math.floor(GRID_WIDTH / 2) && y === Math.floor(GRID_HEIGHT / 2)) ? GridCell.MAX_WATER_LEVEL() : 0;
+			console.log(x, y, Math.floor(GRID_WIDTH / 2), Math.floor(GRID_HEIGHT / 2), waterLevel);
+			row.push(new GridCell(waterLevel));
     }
     gameGrid.push(row);
   }

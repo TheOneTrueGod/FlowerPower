@@ -9,7 +9,7 @@ const DAY_CYCLE_DURATION = 30_000 // 30 seconds
 
 export class TimeManager {
   constructor(config = {}) {
-    this.cycleDuration = config.cycleDuration || DAY_CYCLE_DURATION; // 60 seconds in ms
+    this.cycleDuration = config.cycleDuration || DAY_CYCLE_DURATION;
     this.stateRatios = {
       [TIME_STATES.DAWN]: config.dawnRatio || 0.25,   // 20% of cycle
       [TIME_STATES.DAY]: config.dayRatio || 0.25,     // 40% of cycle
