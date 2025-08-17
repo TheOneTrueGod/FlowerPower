@@ -104,15 +104,15 @@ export class TimeOfDayClock {
 
     // Calculate the position of the sun and moon
     const cycleProgress = this.timeManager.getDayPercent();
-    const angle = (cycleProgress * Math.PI * 2) + Math.PI / 2.0;
+    const sunAngle = (cycleProgress * Math.PI * 2) + Math.PI / 2.0;
 
     const radius = width / 2 - 20;
     const centerX = width / 2;
     const centerY = height;
 
     // Draw the sun
-    const sunX = centerX + Math.cos(angle) * radius;
-    const sunY = centerY + Math.sin(angle) * radius;
+    const sunX = centerX + Math.cos(sunAngle) * radius;
+    const sunY = centerY + Math.sin(sunAngle) * radius;
 
     // Draw sun glow
     const sunGlowGradient = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 15);
@@ -130,8 +130,8 @@ export class TimeOfDayClock {
     ctx.fill();
 
     // Draw the moon (opposite to the sun)
-    const moonX = centerX + Math.cos(angle + Math.PI) * radius;
-    const moonY = centerY + Math.sin(angle + Math.PI) * radius;
+    const moonX = centerX + Math.cos(sunAngle + Math.PI) * radius;
+    const moonY = centerY + Math.sin(sunAngle + Math.PI) * radius;
 
     // Draw moon glow
     const moonGradient = ctx.createRadialGradient(moonX, moonY, 0, moonX, moonY, 12);
