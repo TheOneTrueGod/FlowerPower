@@ -14,23 +14,23 @@ export default class Sunflower extends BaseFlower {
 		this.tooltip = 'Plant a Sunflower\nLights up the night';
 		this.stateConfig = {
 			[STATES.SEED]: {
-				totalWaterNeeded: 5,
-				growthTimeSeconds: 3,
+				totalWaterNeeded: 3,
+				growthTimeHours: 2, // 2 hours to grow from seed to shoot
 				minLightLevel: 0,
 			},
 			[STATES.SHOOT]: {
-				totalWaterNeeded: 5,
-				growthTimeSeconds: 3,
+				totalWaterNeeded: 3,
+				growthTimeHours: 2, // 2 hours to grow from shoot to flower
 				minLightLevel: 0,
 			},
 			[STATES.FLOWER]: {
-				totalWaterNeeded: 10,
-				growthTimeSeconds: 10,
+				totalWaterNeeded: 3,
+				growthTimeHours: 3, // 3 hours to grow from flower to blooming
 				minLightLevel: 50,
 			},
 			[STATES.BLOOMING]: {
-				totalWaterNeeded: 0,
-				growthTimeSeconds: 30,
+				totalWaterNeeded: 3,
+				growthTimeHours: 8, // 8 hours to bloom before expiring
 				minLightLevel: 80,
 			}
 		};

@@ -8,125 +8,131 @@ import { GRID_HEIGHT, GRID_WIDTH } from './constants.js';
 const toolManager = new ToolManager();
 
 window.onload = () => {
-  // Initialize the game grid
-  let gameGrid = [];
-  for (let y = 0; y < GRID_HEIGHT; y++) {
-    let row = [];
-    for (let x = 0; x < GRID_WIDTH; x++) {
+	// Initialize the game grid
+	let gameGrid = [];
+	for (let y = 0; y < GRID_HEIGHT; y++) {
+		let row = [];
+		for (let x = 0; x < GRID_WIDTH; x++) {
 			const waterLevel = (x === Math.floor(GRID_WIDTH / 2) && y === Math.floor(GRID_HEIGHT / 2)) ? GridCell.MAX_WATER_LEVEL() : 0;
-			console.log(x, y, Math.floor(GRID_WIDTH / 2), Math.floor(GRID_HEIGHT / 2), waterLevel);
 			row.push(new GridCell(waterLevel));
-    }
-    gameGrid.push(row);
-  }
+		}
+		gameGrid.push(row);
+	}
 
-  // Get canvas and context
-  const canvas = document.getElementById('flowerCanvas');
-  const ctx = canvas.getContext('2d');
+	// Get canvas and context
+	const canvas = document.getElementById('flowerCanvas');
+	const ctx = canvas.getContext('2d');
 
-  // Prevent text selection on double click
-  canvas.style.userSelect = 'none';
-  canvas.addEventListener('mousedown', (e) => e.preventDefault());
+	// Prevent text selection on double click
+	canvas.style.userSelect = 'none';
+	canvas.addEventListener('mousedown', (e) => e.preventDefault());
 
-  // Calculate cell size based on canvas dimensions
-  const CELL_WIDTH = canvas.width / GRID_WIDTH;
-  const CELL_HEIGHT = canvas.height / GRID_HEIGHT;
+	// Calculate cell size based on canvas dimensions
+	const CELL_WIDTH = canvas.width / GRID_WIDTH;
+	const CELL_HEIGHT = canvas.height / GRID_HEIGHT;
 
-  // Initialize preview images for the flower buttons
-  const lavenderPreview = document.getElementById('lavenderPreview');
-  const rosePreview = document.getElementById('rosePreview');
-  const sunflowerPreview = document.getElementById('sunflowerPreview');
-  const hydroangeaPreview = document.getElementById('hydroangeaPreview');
+	// Initialize preview images for the flower buttons
+	const lavenderPreview = document.getElementById('lavenderPreview');
+	const rosePreview = document.getElementById('rosePreview');
+	const sunflowerPreview = document.getElementById('sunflowerPreview');
+	const hydroangeaPreview = document.getElementById('hydroangeaPreview');
 
-  // Set canvas sizes for previews
-  [
-    ['lavender', lavenderPreview],
-    ['rose', rosePreview],
-    ['sunflower', sunflowerPreview],
-    ['hydroangea', hydroangeaPreview]
-  ].forEach(([flower, canvas]) => {
-    if (canvas) {
-      canvas.width = 50;
-      canvas.height = 50;
+	// Set canvas sizes for previews
+	[
+		['lavender', lavenderPreview],
+		['rose', rosePreview],
+		['sunflower', sunflowerPreview],
+		['hydroangea', hydroangeaPreview]
+	].forEach(([flower, canvas]) => {
+		if (canvas) {
+			canvas.width = 50;
+			canvas.height = 50;
 
-      const ctx = canvas.getContext('2d');
-      FLOWERS[flower].render(ctx, 0, 0, canvas.width, canvas.height, {
-        type: flower,
-        state: STATES.BLOOMING,
-        growth: 0,
-      });
-    }
-  });
+			const ctx = canvas.getContext('2d');
+			FLOWERS[flower].render(ctx, 0, 0, canvas.width, canvas.height, {
+				type: flower,
+				state: STATES.BLOOMING,
+				growth: 0,
+			});
+		}
+	});
 
-  // Add click handler
-  canvas.addEventListener('click', (event) => {
-    // Get click coordinates relative to canvas
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+	// Add click handler
+	canvas.addEventListener('click', (event) => {
+		// Get click coordinates relative to canvas
+		const rect = canvas.getBoundingClientRect();
+		const x = event.clientX - rect.left;
+		const y = event.clientY - rect.top;
 
-    // Convert to grid coordinates
-    const gridX = Math.floor(x / CELL_WIDTH);
-    const gridY = Math.floor(y / CELL_HEIGHT);
+		// Convert to grid coordinates
+		const gridX = Math.floor(x / CELL_WIDTH);
+		const gridY = Math.floor(y / CELL_HEIGHT);
 
-    // Make sure click is within bounds
-    if (gridX >= 0 && gridX < GRID_WIDTH && gridY >= 0 && gridY < GRID_HEIGHT) {
-      const cell = gameGrid[gridY][gridX];
-      const selectedTool = toolManager.getSelectedTool();
+		// Make sure click is within bounds
+		if (gridX >= 0 && gridX < GRID_WIDTH && gridY >= 0 && gridY < GRID_HEIGHT) {
+			const cell = gameGrid[gridY][gridX];
+			const selectedTool = toolManager.getSelectedTool();
 
-      if (selectedTool) {
-        toolManager.useTool(cell, selectedTool, gridX, gridY, gameGrid);
-      }
-    }
-  });
+			if (selectedTool) {
+				toolManager.useTool(cell, selectedTool, gridX, gridY, gameGrid);
+			}
+		}
+	});
 
-  const timeManager = new TimeManager();
+	const timeManager = new TimeManager();
 
-  // Add game state variables
-  let lastTimestamp = 0;
-  const FRAME_RATE = 60;
-  const FRAME_INTERVAL = 1000 / FRAME_RATE;
+	// Add game state variables
+	let lastTimestamp = 0;
+	const FRAME_RATE = 60;
+	const FRAME_INTERVAL = 1000 / FRAME_RATE;
 
-  function updateGame(deltaTime) {
-    timeManager.update(deltaTime);
-    // Update game logic here
-    for (let y = 0; y < GRID_HEIGHT; y++) {
-      for (let x = 0; x < GRID_WIDTH; x++) {
-        const cell = gameGrid[y][x];
-        cell.gameTick(deltaTime, x, y, gameGrid, timeManager);
-      }
-    }
-  }
+	function updateGame(deltaTime) {
+		const lastHour = timeManager.getCurrentGameHour();
+		timeManager.update(deltaTime);
+		const currentHour = timeManager.getCurrentGameHour();
+		// Only update game logic (flowers, etc.) when a new game hour starts
+		for (let y = 0; y < GRID_HEIGHT; y++) {
+			for (let x = 0; x < GRID_WIDTH; x++) {
+				const cell = gameGrid[y][x];
+				// Pass 1 hour worth of time (in milliseconds) for consistent growth
+				const oneGameHourMs = 1000; // 1 second = 1 game hour
+				if (lastHour !== currentHour) {
+					cell.gameTick(oneGameHourMs, x, y, gameGrid, timeManager);
+				}
+				cell.animationTick(oneGameHourMs, x, y, gameGrid, timeManager)
+			}
+		}
+	}
 
-  function gameLoop(timestamp) {
-    // Calculate delta time
-    const deltaTime = timestamp - lastTimestamp;
+	function gameLoop(timestamp) {
+		// Calculate delta time
+		const deltaTime = timestamp - lastTimestamp;
 
-    // Only update if enough time has passed
-    if (deltaTime >= FRAME_INTERVAL) {
-      updateGame(deltaTime);
-      renderGrid();
-      lastTimestamp = timestamp;
-    }
+		// Only update if enough time has passed
+		if (deltaTime >= FRAME_INTERVAL) {
+			updateGame(deltaTime);
+			renderGrid();
+			lastTimestamp = timestamp;
+		}
 
-    // Request next frame
-    requestAnimationFrame(gameLoop);
-  }
+		// Request next frame
+		requestAnimationFrame(gameLoop);
+	}
 
-  function renderGrid() {
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+	function renderGrid() {
+		// Clear canvas
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Render each cell
-    for (let y = 0; y < GRID_HEIGHT; y++) {
-      for (let x = 0; x < GRID_WIDTH; x++) {
-        gameGrid[y][x].render(ctx, x, y, CELL_WIDTH, CELL_HEIGHT);
-      }
-    }
-  }
+		// Render each cell
+		for (let y = 0; y < GRID_HEIGHT; y++) {
+			for (let x = 0; x < GRID_WIDTH; x++) {
+				gameGrid[y][x].render(ctx, x, y, CELL_WIDTH, CELL_HEIGHT);
+			}
+		}
+	}
 
-  // Start the game loop
-  requestAnimationFrame(gameLoop);
+	// Start the game loop
+	requestAnimationFrame(gameLoop);
 
-  // Remove the single renderGrid() call since it's now in the game loop
+	// Remove the single renderGrid() call since it's now in the game loop
 }

@@ -11,20 +11,20 @@ export default class Hydroangea extends BaseFlower {
         this.tooltip = 'Plant a Hydroangea\nWhile blooming, automatically waters all cells in its column.';
         this.stateConfig = {
             [STATES.SEED]: {
-                totalWaterNeeded: 10,
-                growthTimeSeconds: 2.0,
+                totalWaterNeeded: 4,
+                growthTimeHours: 2, // 2 hours to grow from seed to shoot
             },
             [STATES.SHOOT]: {
-                totalWaterNeeded: 10,
-                growthTimeSeconds: 5.0,
+                totalWaterNeeded: 4,
+                growthTimeHours: 3, // 3 hours to grow from shoot to flower
             },
             [STATES.FLOWER]: {
-                totalWaterNeeded: 10,
-                growthTimeSeconds: 5,
+                totalWaterNeeded: 4,
+                growthTimeHours: 3, // 3 hours to grow from flower to blooming
             },
             [STATES.BLOOMING]: {
-                totalWaterNeeded: 0,
-                growthTimeSeconds: 20,
+                totalWaterNeeded: 4,
+                growthTimeHours: 6, // 6 hours to bloom before expiring
             }
         };
     }

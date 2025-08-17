@@ -10,20 +10,20 @@ export default class Rose extends BaseFlower {
     this.tooltip = 'Plant a Rose\nSlow to grow but very hardy once established';
     this.stateConfig = {
       [STATES.SEED]: {
-        totalWaterNeeded: 1,
-        growthTimeSeconds: 1,
+        totalWaterNeeded: 2,
+        growthTimeHours: 1, // 1 hour to grow from seed to shoot
       },
       [STATES.SHOOT]: {
-        totalWaterNeeded: 1,
-        growthTimeSeconds: 1,
+        totalWaterNeeded: 2,
+        growthTimeHours: 1, // 1 hour to grow from shoot to flower
       },
       [STATES.FLOWER]: {
-        totalWaterNeeded: 1,
-        growthTimeSeconds: 1,
+        totalWaterNeeded: 2,
+        growthTimeHours: 1, // 1 hour to grow from flower to blooming
       },
       [STATES.BLOOMING]: {
-        totalWaterNeeded: 1,
-        growthTimeSeconds: 1,
+        totalWaterNeeded: 2,
+        growthTimeHours: 4, // 4 hours to bloom before expiring
       }
     };
   }

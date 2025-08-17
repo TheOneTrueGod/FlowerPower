@@ -13,19 +13,19 @@ export default class Lavender extends BaseFlower {
     this.stateConfig = {
       [STATES.SEED]: {
         totalWaterNeeded: 1,
-        growthTimeSeconds: 2,
+        growthTimeHours: 1, // 1 hour to grow from seed to shoot
       },
       [STATES.SHOOT]: {
         totalWaterNeeded: 1,
-        growthTimeSeconds: 2,
+        growthTimeHours: 1, // 1 hour to grow from shoot to flower
       },
       [STATES.FLOWER]: {
         totalWaterNeeded: 1,
-        growthTimeSeconds: 2,
+        growthTimeHours: 1, // 1 hour to grow from flower to blooming
       },
       [STATES.BLOOMING]: {
         totalWaterNeeded: 1,
-        growthTimeSeconds: 30,
+        growthTimeHours: 6, // 6 hours to bloom before expiring
       }
     };
   }

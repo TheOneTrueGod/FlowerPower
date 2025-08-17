@@ -1,15 +1,19 @@
 import { STATES } from "../flowers.js";
 import { PLANT_EFFECT_TYPES } from "../PlantEffect.js";
 
-function getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, growthTimeMilliseconds, sunlight, deltaTime) {
-
+function getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, growthTimeHours, sunlight, deltaTime) {
   const growthRateModifier = sunlight / 100
 
   if (waterNeeded === 0) {
-    return { waterUsedThisTick: 0, growthThisTick: deltaTime / growthTimeMilliseconds * 100 * growthRateModifier };
+    // For plants that don't need water, grow by 1 hour worth of progress
+    return { waterUsedThisTick: 0, growthThisTick: 100 / growthTimeHours * growthRateModifier };
   }
-  const waterUsedThisTick = Math.min(waterLevel, waterNeeded / growthTimeMilliseconds * deltaTime * growthRateModifier);
-  const growthThisTick = waterUsedThisTick / waterNeeded * 100;
+  
+  // Calculate water needed for 1 hour of growth
+  const waterNeededPerHour = waterNeeded / growthTimeHours;
+  const waterUsedThisTick = Math.min(waterLevel, waterNeededPerHour * growthRateModifier);
+  const growthThisTick = (waterUsedThisTick / waterNeededPerHour) * (100 / growthTimeHours);
+  
   return { waterUsedThisTick, growthThisTick };
 }
 
@@ -21,19 +25,19 @@ export default class BaseFlower {
     this.stateConfig = {
       [STATES.SEED]: {
         totalWaterNeeded: 15,
-        growthTimeSeconds: 10,
+        growthTimeHours: 2, // 2 hours to grow from seed to shoot
       },
       [STATES.SHOOT]: {
         totalWaterNeeded: 20,
-        growthTimeSeconds: 15,
+        growthTimeHours: 3, // 3 hours to grow from shoot to flower
       },
       [STATES.FLOWER]: {
         totalWaterNeeded: 25,
-        growthTimeSeconds: 20,
+        growthTimeHours: 4, // 4 hours to grow from flower to blooming
       },
       [STATES.BLOOMING]: {
         totalWaterNeeded: 30,
-        growthTimeSeconds: 30,
+        growthTimeHours: 8, // 8 hours to bloom before expiring
       }
     };
     this.hue = 0;
@@ -126,9 +130,8 @@ export default class BaseFlower {
   update(plant, waterLevel, sunlight, deltaTime) {
     const currentStateConfig = this.stateConfig[plant.state];
     const waterNeeded = currentStateConfig.totalWaterNeeded;
-    const growthTimeMilliseconds = currentStateConfig.growthTimeSeconds * 1000;
 
-    const { waterUsedThisTick, growthThisTick } = getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, growthTimeMilliseconds, sunlight, deltaTime);
+    const { waterUsedThisTick, growthThisTick } = getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, currentStateConfig.growthTimeHours, sunlight, deltaTime);
 
     plant.growth += growthThisTick;
 

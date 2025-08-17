@@ -4,6 +4,13 @@
   "private": true,
   "description": "Serve index.html via Python http.server on localhost:3333 and open the browser",
   "scripts": {
-    "start": "start \"\" cmd /c \"timeout /t 1 >nul & start http://localhost:3333\" & (py -m http.server 3333 --bind 127.0.0.1 || python -m http.server 3333 --bind 127.0.0.1 || python3 -m http.server 3333 --bind 127.0.0.1)"
+    "start": "start \"\" cmd /c \"timeout /t 1 >nul & start http://localhost:3333\" & (py -m http.server 3333 --bind 127.0.0.1 || python -m http.server 3333 --bind 127.0.0.1 || python3 -m http.server 3333 --bind 127.0.0.1)",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "dev": "tsc --watch & npm start"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2"
   }
-} 
+}

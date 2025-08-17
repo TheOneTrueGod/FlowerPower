@@ -2,7 +2,7 @@ import { GRID_WIDTH } from './constants.js';
 import { FLOWERS } from './flowers.js';
 import { PLANT_EFFECT_TYPES } from './PlantEffect.js';
 
-const DEBUG_SHOW_SUNLIGHT = false;
+const DEBUG_SHOW_SUNLIGHT = true;
 
 export default class GridCell {
 	static MAX_WATER_LEVEL() { return 20 };
@@ -13,15 +13,24 @@ export default class GridCell {
     this.plantEffects = []
   }
 
-  gameTick(deltaTime, x, y, gameGrid, timeManager) {
-    const minLightLevel = this.plantEffects.reduce((acc, effect) => {
+	getMinLightLevel() {
+		return this.plantEffects.reduce((acc, effect) => {
       if (effect.effectType === PLANT_EFFECT_TYPES.MIN_LIGHT_LEVEL) {
         return Math.max(effect.effectValue, acc)
       }
       return acc
     }, 0);
+	}
 
+	animationTick(deltaTime, x, y, gameGrid, timeManager) {
+		const minLightLevel = this.getMinLightLevel()
+		this.sunlight = Math.max(minLightLevel, timeManager.getLightLevelForColumn(x, GRID_WIDTH));
+	}
+
+  gameTick(deltaTime, x, y, gameGrid, timeManager) {
+    const minLightLevel = this.getMinLightLevel()
     this.sunlight = Math.max(minLightLevel, timeManager.getLightLevelForColumn(x, GRID_WIDTH));
+		
     if (this.hasPlant()) {
       const flowerDef = FLOWERS[this.plant.type];
       if (flowerDef) {
@@ -101,7 +110,7 @@ export default class GridCell {
       ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
       ctx.fillRect(x * width, y * height, width, height);
     }
-
+		
     if (DEBUG_SHOW_SUNLIGHT) {
       // Draw sunlight level text
       ctx.fillStyle = 'white';
