@@ -100,9 +100,9 @@
 
 <body>
   <h1>Flower Power</h1>
-  <canvas id="flowerCanvas" width="800" height="600"></canvas>
+  <div><canvas id="timeIndicator" class="time-indicator" width="120" height="60"></canvas></div>
+  <canvas id="flowerCanvas" width="400" height="400"></canvas>
   <div class="game-controls">
-    <div><canvas id="timeIndicator" class="time-indicator" width="120" height="60"></canvas></div>
     <div class="button-container">
       <button class="tool-button" id="wateringCan"
         data-tooltip="Water plants&#10;Waters the selected cell and its neighbors">
@@ -147,12 +147,11 @@
           <canvas id="hydroangeaPreview"></canvas>
         </button>
       </div>
-      <div style="width: 120px"></div> <!-- Spacer to balance the layout -->
     </div>
   </div>
 </body>
 
 <script>var exports = {};</script>
-<script src="/dist/app.js" type="module"></script>
+<script src="dist/app.js" type="module"></script>
 
 </html>

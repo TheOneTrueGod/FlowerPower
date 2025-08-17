@@ -6,7 +6,7 @@
     "module": "es6",     // Module system to use
     "strict": true,           // Enable all strict type-checking options
     "noImplicitAny": false,   // Allow parameters to implicitly have 'any' type (warning instead of error)
-    "lib": ["es2017", "dom"],
+    "lib": ["es2017", "dom"]
   },
   "include": [
     "src/**/*"              // Include all TypeScript files in the src directory
