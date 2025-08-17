@@ -3,6 +3,7 @@ import { FLOWER_STATES, FLOWER_TYPES } from './flowers.js';
 import PlantEffect, { PLANT_EFFECT_TYPES } from '../PlantEffect.js';
 import { getAdjacentCoords } from '../gridUtils.js';
 import { GameGrid } from '../gameGrid/types.js';
+import { TimeManager } from '../managers/TimeManager.js';
 
 const SUNFLOWER_MIN_LIGHT_LEVEL = 80;
 
@@ -77,7 +78,7 @@ export default class Sunflower extends BaseFlower {
 		}
 	}
 
-	renderBlooming(ctx: CanvasRenderingContext2D, x: number, y: number, cellWidth: number, cellHeight: number, growth: number) {
+	renderBlooming(timeManager: TimeManager, ctx: CanvasRenderingContext2D, x: number, y: number, cellWidth: number, cellHeight: number, growth: number) {
 		const brightness = 50 + growth / 4;
 		const size = (0.8 - growth / 100 * 0.4) * Math.min(cellWidth, cellHeight);
 

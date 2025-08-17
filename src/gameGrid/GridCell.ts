@@ -4,7 +4,7 @@ import { TimeManager } from '../managers/TimeManager.js';
 import PlantEffect, { PLANT_EFFECT_TYPES } from '../PlantEffect.js';
 import { GameGrid } from './types.js';
 
-const DEBUG_SHOW_SUNLIGHT = true;
+const DEBUG_SHOW_SUNLIGHT = false;
 
 export type CellPlant = {
   type: FLOWER_TYPES;
@@ -48,7 +48,7 @@ export default class GridCell {
     if (this.hasPlant() && this.plant) {
       const flowerDef = FLOWERS[this.plant.type];
       if (flowerDef) {
-        const waterConsumed = flowerDef.update(this.plant, this.waterLevel, this.sunlight, deltaTime);
+        const waterConsumed = flowerDef.gameTick(this.plant, this.waterLevel, this.sunlight);
         this.waterLevel = Math.max(0, this.waterLevel - waterConsumed);
 
         if (this.plant && this.plant.stateJustChanged) {
@@ -97,7 +97,7 @@ export default class GridCell {
     this.waterLevel = Math.min(this.waterLevel + amount, GridCell.MAX_WATER_LEVEL());
   }
 
-  render(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) {
+  render(timeManager: TimeManager, ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) {
     // Draw soil background
     ctx.fillStyle = '#8B4513';
     ctx.fillRect(x * width, y * height, width, height);
@@ -118,7 +118,7 @@ export default class GridCell {
     if (this.plant !== null) {
       const flowerDef = FLOWERS[this.plant.type];
       if (flowerDef) {
-        flowerDef.render(ctx, x, y, width, height, this.plant);
+        flowerDef.render(timeManager, ctx, x, y, width, height, this.plant);
       }
     }
 

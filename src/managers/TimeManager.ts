@@ -52,6 +52,32 @@ export class TimeManager {
     this.timeOfDayClock = new TimeOfDayClock(this)
   }
 
+  public getPhaseOfDay(): TIME_STATES {
+    return this.phaseOfDay
+  }
+
+  public getGameHour() {
+    return this.gameHour;
+  }
+
+  public getCycleTime() {
+    return this.gameHour * REAL_TIME_PER_GAME_HOUR + this.currentTime
+  }
+
+  /**
+   * Returns the percentage of the way through the day
+   */
+  public getDayPercent() {
+    return this.getCycleTime() / this.cycleDuration;
+  }
+  
+  /**
+   * Returns the percentage of the way through the current hour we are
+   */
+  public getPercentThroughHour() {
+    return this.currentTime / REAL_TIME_PER_GAME_HOUR
+  }
+
   private calculatePhaseOfDay() {
     let previousPhase = TIME_STATES.NIGHT
     for (const [phase, phaseStart] of Object.entries(this.phaseStarts)) {
@@ -63,11 +89,7 @@ export class TimeManager {
     return TIME_STATES.NIGHT
   }
 
-  getPhaseOfDay(): TIME_STATES {
-    return this.phaseOfDay
-  }
-
-  getNextPhaseOfDay(phaseOfDay: TIME_STATES) {
+  private getNextPhaseOfDay(phaseOfDay: TIME_STATES) {
     switch (phaseOfDay) {
       case TIME_STATES.DAWN:
         return TIME_STATES.DAY
@@ -82,7 +104,10 @@ export class TimeManager {
     }
   }
 
-  getPercentThroughPhase() {
+  /**
+   * Returns the percentage of the way through the current phase of the day
+   */
+  public getPercentThroughPhase() {
     const nextPhase = this.getNextPhaseOfDay(this.phaseOfDay)
     let currentPhaseStart = this.phaseStarts[this.phaseOfDay]
     let nextPhaseStart = this.phaseStarts[nextPhase]
@@ -117,10 +142,6 @@ export class TimeManager {
     this.timeOfDayClock.renderTimeIndicator(this.ctx, this.width, this.height);
   }
 
-  getCurrentGameHour() {
-    return this.gameHour;
-  }
-
   // Returns light level (0-1) for a specific grid column
   getLightLevelForColumn(column, totalColumns) {
     const stateProgress = this.getPercentThroughPhase()
@@ -145,13 +166,5 @@ export class TimeManager {
       case TIME_STATES.NIGHT:
         return 0; // No light during night
     }
-  }
-
-  getCycleTime() {
-    return this.gameHour * REAL_TIME_PER_GAME_HOUR + this.currentTime
-  }
-
-  getDayPercent() {
-    return this.getCycleTime() / this.cycleDuration;
   }
 }

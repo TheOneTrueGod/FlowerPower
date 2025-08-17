@@ -10,6 +10,7 @@ const toolManager = new ToolManager();
 window.onload = () => {
   // Initialize the game grid
   let gameGrid: Array<Array<GridCell>> = [];
+  const timeManager = new TimeManager();
 
   for (let y = 0; y < GRID_HEIGHT; y++) {
     let row: Array<GridCell> = [];
@@ -58,7 +59,7 @@ window.onload = () => {
       if (!ctx) {
         throw new Error("unable to get 2d context")
       }
-      FLOWERS[plantType].render(ctx, 0, 0, canvas.width, canvas.height, {
+      FLOWERS[plantType].render(timeManager, ctx, 0, 0, canvas.width, canvas.height, {
         type: plantType,
         state: FLOWER_STATES.BLOOMING,
         growth: 0,
@@ -88,17 +89,15 @@ window.onload = () => {
     }
   });
 
-  const timeManager = new TimeManager();
-
   // Add game state variables
   let lastTimestamp = 0;
   const FRAME_RATE = 60;
   const FRAME_INTERVAL = 1000 / FRAME_RATE;
 
   function updateGame(deltaTime: number) {
-    const lastHour = timeManager.getCurrentGameHour();
+    const lastHour = timeManager.getGameHour();
     timeManager.update(deltaTime);
-    const currentHour = timeManager.getCurrentGameHour();
+    const currentHour = timeManager.getGameHour();
 
     // Only update game logic (flowers, etc.) when a new game hour starts
     for (let y = 0; y < GRID_HEIGHT; y++) {
@@ -139,7 +138,7 @@ window.onload = () => {
     // Render each cell
     for (let y = 0; y < GRID_HEIGHT; y++) {
       for (let x = 0; x < GRID_WIDTH; x++) {
-        gameGrid[y][x].render(ctx, x, y, CELL_WIDTH, CELL_HEIGHT);
+        gameGrid[y][x].render(timeManager, ctx, x, y, CELL_WIDTH, CELL_HEIGHT);
       }
     }
   }

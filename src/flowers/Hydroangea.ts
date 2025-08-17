@@ -2,6 +2,7 @@ import { WaterAbility } from '../flowerAbilities/WaterAbility.js';
 import { GameGrid } from '../gameGrid/types.js';
 import BaseFlower from './BaseFlower.js';
 import { FLOWER_STATES, FLOWER_TYPES } from './flowers.js';
+import { TimeManager } from '../managers/TimeManager.js';
 
 export default class Hydroangea extends BaseFlower {
   type: FLOWER_TYPES;
@@ -31,7 +32,7 @@ export default class Hydroangea extends BaseFlower {
     };
   }
 
-  renderBlooming(ctx: CanvasRenderingContext2D, x: number, y: number, cellWidth: number, cellHeight: number, growth: number) {
+  renderBlooming(timeManager: TimeManager, ctx: CanvasRenderingContext2D, x: number, y: number, cellWidth: number, cellHeight: number, growth: number) {
     // Add a watery effect for blooming hydroangeas
     const brightness = 50 + growth / 4;
     const size = (0.8 - growth / 100 * 0.4) * Math.min(cellWidth, cellHeight);

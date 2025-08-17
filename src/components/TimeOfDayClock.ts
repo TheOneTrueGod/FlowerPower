@@ -150,7 +150,7 @@ export class TimeOfDayClock {
     ctx.fillStyle = this.timeManager.getPhaseOfDay() === TIME_STATES.DAY ? '#333' : '#fff';
     // Add game hour display
     ctx.font = '12px Arial';
-    ctx.fillText(`${this.timeManager.getCurrentGameHour()}:00`, width / 2, height - 20);
+    ctx.fillText(`${this.timeManager.getGameHour()}:00`, width / 2, height - 20);
 
     // Add time of day label
     ctx.font = '14px Arial';

@@ -3,8 +3,9 @@ import { PLANT_EFFECT_TYPES } from "../PlantEffect.js";
 import { GameGrid } from "../gameGrid/types.js";
 import { CellPlant } from "../gameGrid/GridCell.js";
 import { BaseFlowerAbility } from "../flowerAbilities/BaseFlowerAbility.js"
+import { TimeManager } from "../managers/TimeManager.js";
 
-function getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, growthTimeHours, sunlight, deltaTime) {
+function getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, growthTimeHours, sunlight) {
   const growthRateModifier = sunlight / 100
 
   if (waterNeeded === 0) {
@@ -77,28 +78,28 @@ export default abstract class BaseFlower {
 		this.abilities.forEach((ability) => ability.onExpire(x, y, gameGrid, plantState))
   }
 
-  renderSeed(ctx: CanvasRenderingContext2D, x: any, y: any, cellWidth: number, cellHeight: number, growth: number) {
+  renderSeed(timeManager: TimeManager, ctx: CanvasRenderingContext2D, x: any, y: any, cellWidth: number, cellHeight: number, growth: number) {
     const brightness = 30 + growth / 4;
     const size = (growth / 100 * 0.1 + 0.2) * Math.min(cellWidth, cellHeight);
     ctx.fillStyle = `hsl(30, 20%, ${brightness}%)`; // Brown color for seed
     this.drawFlowerShape(ctx, x, y, cellWidth, cellHeight, size);
   }
 
-  renderShoot(ctx: CanvasRenderingContext2D, x: any, y: any, cellWidth: number, cellHeight: number, growth: number) {
+  renderShoot(timeManager: TimeManager, ctx: CanvasRenderingContext2D, x: any, y: any, cellWidth: number, cellHeight: number, growth: number) {
     const brightness = 40 + growth / 4;
     const size = (growth / 100 * 0.2 + 0.3) * Math.min(cellWidth, cellHeight);
     ctx.fillStyle = `hsl(120, 70%, ${brightness}%)`; // Green color for shoot
     this.drawFlowerShape(ctx, x, y, cellWidth, cellHeight, size);
   }
 
-  renderFlower(ctx: CanvasRenderingContext2D, x: any, y: any, cellWidth: number, cellHeight: number, growth: number) {
+  renderFlower(timeManager: TimeManager, ctx: CanvasRenderingContext2D, x: any, y: any, cellWidth: number, cellHeight: number, growth: number) {
     const brightness = 50 + growth / 4;
     const size = (growth / 100 * 0.3 + 0.5) * Math.min(cellWidth, cellHeight);
     ctx.fillStyle = `hsl(${this.hue}, ${this.saturation}%, ${brightness}%)`;
     this.drawFlowerShape(ctx, x, y, cellWidth, cellHeight, size);
   }
 
-  renderBlooming(ctx: CanvasRenderingContext2D, x: any, y: any, cellWidth: number, cellHeight: number, growth: number) {
+  renderBlooming(timeManager: TimeManager, ctx: CanvasRenderingContext2D, x: any, y: any, cellWidth: number, cellHeight: number, growth: number) {
     const brightness = 60 + growth / 4;
     const size = (0.8 - growth / 100 * 0.4) * Math.min(cellWidth, cellHeight);
 
@@ -119,30 +120,29 @@ export default abstract class BaseFlower {
     ctx.fill();
   }
 
-  render(ctx: CanvasRenderingContext2D, x: number, y: number, cellWidth: number, cellHeight: number, plant: CellPlant) {
+  render(timeManager: TimeManager, ctx: CanvasRenderingContext2D, x: number, y: number, cellWidth: number, cellHeight: number, plant: CellPlant) {
     const { state, growth } = plant;
-
     switch (state) {
       case FLOWER_STATES.SEED:
-        this.renderSeed(ctx, x, y, cellWidth, cellHeight, growth);
+        this.renderSeed(timeManager, ctx, x, y, cellWidth, cellHeight, growth);
         break;
       case FLOWER_STATES.SHOOT:
-        this.renderShoot(ctx, x, y, cellWidth, cellHeight, growth);
+        this.renderShoot(timeManager, ctx, x, y, cellWidth, cellHeight, growth);
         break;
       case FLOWER_STATES.FLOWER:
-        this.renderFlower(ctx, x, y, cellWidth, cellHeight, growth);
+        this.renderFlower(timeManager, ctx, x, y, cellWidth, cellHeight, growth);
         break;
       case FLOWER_STATES.BLOOMING:
-        this.renderBlooming(ctx, x, y, cellWidth, cellHeight, growth);
+        this.renderBlooming(timeManager, ctx, x, y, cellWidth, cellHeight, growth);
         break;
     }
   }
 
-  update(plant: CellPlant, waterLevel: number, sunlight: number, deltaTime: number) {
+  gameTick(plant: CellPlant, waterLevel: number, sunlight: number) {
     const currentStateConfig = this.stateConfig[plant.state];
     const waterNeeded = currentStateConfig.totalWaterNeeded;
 
-    const { waterUsedThisTick, growthThisTick } = getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, currentStateConfig.growthTimeHours, sunlight, deltaTime);
+    const { waterUsedThisTick, growthThisTick } = getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, currentStateConfig.growthTimeHours, sunlight);
 
     plant.growth += growthThisTick;
 
