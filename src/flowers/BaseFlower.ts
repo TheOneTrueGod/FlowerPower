@@ -1,5 +1,8 @@
-import { STATES } from "../flowers.js";
+import { FLOWER_STATES, FLOWER_TYPES } from "./flowers.js";
 import { PLANT_EFFECT_TYPES } from "../PlantEffect.js";
+import { GameGrid } from "../gameGrid/types.js";
+import { CellPlant } from "../gameGrid/GridCell.js";
+import { BaseFlowerAbility } from "../flowerAbilities/BaseFlowerAbility.js"
 
 function getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, growthTimeHours, sunlight, deltaTime) {
   const growthRateModifier = sunlight / 100
@@ -17,25 +20,32 @@ function getGrowthThisTickAndWaterUsedThisTick(waterLevel, waterNeeded, growthTi
   return { waterUsedThisTick, growthThisTick };
 }
 
-export default class BaseFlower {
-  constructor(abilities = []) {
+export type BaseFlowerStateConfig = { totalWaterNeeded: number; growthTimeHours: number; }
+
+export default abstract class BaseFlower {
+  hue: number;
+  name: string;
+  abstract type: FLOWER_TYPES;
+  stateConfig: Record<FLOWER_STATES, BaseFlowerStateConfig>
+  saturation: number;
+  tooltip: string;
+
+  constructor(protected abilities: Array<BaseFlowerAbility> = []) {
     this.name = this.constructor.name;
-		this.abilities = abilities
-    this.type = "base_flower"
     this.stateConfig = {
-      [STATES.SEED]: {
+      [FLOWER_STATES.SEED]: {
         totalWaterNeeded: 15,
         growthTimeHours: 2, // 2 hours to grow from seed to shoot
       },
-      [STATES.SHOOT]: {
+      [FLOWER_STATES.SHOOT]: {
         totalWaterNeeded: 20,
         growthTimeHours: 3, // 3 hours to grow from shoot to flower
       },
-      [STATES.FLOWER]: {
+      [FLOWER_STATES.FLOWER]: {
         totalWaterNeeded: 25,
         growthTimeHours: 4, // 4 hours to grow from flower to blooming
       },
-      [STATES.BLOOMING]: {
+      [FLOWER_STATES.BLOOMING]: {
         totalWaterNeeded: 30,
         growthTimeHours: 8, // 8 hours to bloom before expiring
       }
@@ -45,20 +55,20 @@ export default class BaseFlower {
     this.tooltip = 'A basic flower';
   }
 
-  onStateChange(oldState, newState, x, y, gameGrid) {
+  onStateChange(oldState: FLOWER_STATES, newState: FLOWER_STATES, x: number, y: number, gameGrid: GameGrid) {
     console.log(`${this.name} progressed from ${oldState} to ${newState}`);
     this.onRemove(x, y, gameGrid, oldState);
     this.onAdd(x, y, gameGrid, newState);
   }
 
-  onRemove(x, y, gameGrid, plantState) {
-		this.abilities.forEach((ability) => ability.onRemove(x, y, gameGrid, plantState))
-	}
-  onAdd(x, y, gameGrid, plantState) {
-		this.abilities.forEach((ability) => ability.onAdd(x, y, gameGrid, plantState))
-	}
+  onRemove(x: number, y: number, gameGrid: GameGrid, plantState: FLOWER_STATES) {
+    this.abilities.forEach((ability) => ability.onRemove(x, y, gameGrid, plantState))
+  }
+  onAdd(x: number, y: number, gameGrid: GameGrid, plantState: FLOWER_STATES) {
+    this.abilities.forEach((ability) => ability.onAdd(x, y, gameGrid, plantState))
+  }
 
-  onExpire(x, y, gameGrid, plantState) {
+  onExpire(x: number, y: number, gameGrid: GameGrid, plantState: FLOWER_STATES) {
     console.log('onExpire', x, y, gameGrid[y][x], plantState);
     if (gameGrid[y][x].plantEffects.some(effect => effect.effectType === PLANT_EFFECT_TYPES.POLLINATED)) {
       gameGrid[y][x].plantFlower(this.type)
@@ -67,36 +77,37 @@ export default class BaseFlower {
 		this.abilities.forEach((ability) => ability.onExpire(x, y, gameGrid, plantState))
   }
 
-  renderSeed(ctx, x, y, cellWidth, cellHeight, growth) {
+  renderSeed(ctx: CanvasRenderingContext2D, x: any, y: any, cellWidth: number, cellHeight: number, growth: number) {
     const brightness = 30 + growth / 4;
     const size = (growth / 100 * 0.1 + 0.2) * Math.min(cellWidth, cellHeight);
     ctx.fillStyle = `hsl(30, 20%, ${brightness}%)`; // Brown color for seed
     this.drawFlowerShape(ctx, x, y, cellWidth, cellHeight, size);
   }
 
-  renderShoot(ctx, x, y, cellWidth, cellHeight, growth) {
+  renderShoot(ctx: CanvasRenderingContext2D, x: any, y: any, cellWidth: number, cellHeight: number, growth: number) {
     const brightness = 40 + growth / 4;
     const size = (growth / 100 * 0.2 + 0.3) * Math.min(cellWidth, cellHeight);
     ctx.fillStyle = `hsl(120, 70%, ${brightness}%)`; // Green color for shoot
     this.drawFlowerShape(ctx, x, y, cellWidth, cellHeight, size);
   }
 
-  renderFlower(ctx, x, y, cellWidth, cellHeight, growth) {
+  renderFlower(ctx: CanvasRenderingContext2D, x: any, y: any, cellWidth: number, cellHeight: number, growth: number) {
     const brightness = 50 + growth / 4;
     const size = (growth / 100 * 0.3 + 0.5) * Math.min(cellWidth, cellHeight);
     ctx.fillStyle = `hsl(${this.hue}, ${this.saturation}%, ${brightness}%)`;
     this.drawFlowerShape(ctx, x, y, cellWidth, cellHeight, size);
   }
 
-  renderBlooming(ctx, x, y, cellWidth, cellHeight, growth) {
+  renderBlooming(ctx: CanvasRenderingContext2D, x: any, y: any, cellWidth: number, cellHeight: number, growth: number) {
     const brightness = 60 + growth / 4;
     const size = (0.8 - growth / 100 * 0.4) * Math.min(cellWidth, cellHeight);
+
     ctx.fillStyle = `hsl(${this.hue}, ${this.saturation}%, ${brightness}%)`;
     this.drawFlowerShape(ctx, x, y, cellWidth, cellHeight, size);
   }
 
   // Helper method to draw the basic flower shape
-  drawFlowerShape(ctx, x, y, cellWidth, cellHeight, size) {
+  drawFlowerShape(ctx: CanvasRenderingContext2D, x: any, y: any, cellWidth: number, cellHeight: number, size: number) {
     ctx.beginPath();
     ctx.arc(
       x * cellWidth + cellWidth / 2,
@@ -108,26 +119,26 @@ export default class BaseFlower {
     ctx.fill();
   }
 
-  render(ctx, x, y, cellWidth, cellHeight, plant) {
+  render(ctx: CanvasRenderingContext2D, x: number, y: number, cellWidth: number, cellHeight: number, plant: CellPlant) {
     const { state, growth } = plant;
 
     switch (state) {
-      case STATES.SEED:
+      case FLOWER_STATES.SEED:
         this.renderSeed(ctx, x, y, cellWidth, cellHeight, growth);
         break;
-      case STATES.SHOOT:
+      case FLOWER_STATES.SHOOT:
         this.renderShoot(ctx, x, y, cellWidth, cellHeight, growth);
         break;
-      case STATES.FLOWER:
+      case FLOWER_STATES.FLOWER:
         this.renderFlower(ctx, x, y, cellWidth, cellHeight, growth);
         break;
-      case STATES.BLOOMING:
+      case FLOWER_STATES.BLOOMING:
         this.renderBlooming(ctx, x, y, cellWidth, cellHeight, growth);
         break;
     }
   }
 
-  update(plant, waterLevel, sunlight, deltaTime) {
+  update(plant: CellPlant, waterLevel: number, sunlight: number, deltaTime: number) {
     const currentStateConfig = this.stateConfig[plant.state];
     const waterNeeded = currentStateConfig.totalWaterNeeded;
 
@@ -136,7 +147,7 @@ export default class BaseFlower {
     plant.growth += growthThisTick;
 
     if (plant.growth >= 100) {
-      const states = Object.values(STATES);
+      const states = Object.values(FLOWER_STATES);
       const currentIndex = states.indexOf(plant.state);
 
       if (currentIndex < states.length - 1) {

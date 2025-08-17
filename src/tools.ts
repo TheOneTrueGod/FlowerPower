@@ -1,12 +1,13 @@
-import { FLOWERS } from './flowers.js';
+import { FLOWER_TYPES, FLOWERS } from './flowers/flowers.js';
+import GridCell from './gameGrid/GridCell.js';
 
-export const TOOLS = {
-  WATERING_CAN: 'wateringCan',
-  LAVENDER: 'lavender',
-  ROSE: 'rose',
-  SUNFLOWER: 'sunflower',
-  HYDROANGEA: 'hydroangea'
-};
+export enum TOOLS {
+  WATERING_CAN = 'wateringCan',
+  LAVENDER = 'lavender',
+  ROSE = 'rose',
+  SUNFLOWER = 'sunflower',
+  HYDROANGEA = 'hydroangea'
+}
 
 export const TOOL_TOOLTIPS = {
   wateringCan: 'Water plants\nWaters the selected cell and its neighbors'
@@ -16,6 +17,7 @@ const WATER_AMOUNT = 10;
 const ADJACENT_WATER_MULTIPLIER = 0.5;
 
 export class ToolManager {
+  selectedTool: TOOLS | null
   constructor() {
     this.selectedTool = null;
     this.initializeTools();
@@ -24,13 +26,15 @@ export class ToolManager {
   initializeTools() {
     // Add selected styling and tooltips
     const buttons = document.querySelectorAll('.tool-button');
-
     buttons.forEach(button => {
       // Set tooltip from appropriate source
       if (button.id === 'wateringCan') {
         button.setAttribute('data-tooltip', TOOL_TOOLTIPS.wateringCan);
       } else {
-        const flowerType = button.id.replace('Button', '');
+        const flowerType = button.id.replace('Button', '') as FLOWER_TYPES;
+        if (!Object.values(FLOWER_TYPES).includes(flowerType)) {
+          throw new Error("Invalid flower type from button");
+        }
         if (FLOWERS[flowerType]) {
           button.setAttribute('data-tooltip', FLOWERS[flowerType].tooltip);
         }
@@ -42,7 +46,11 @@ export class ToolManager {
         // Add selected class to clicked button
         button.classList.add('selected');
         // Update selected tool
-        this.selectedTool = button.id;
+        const toolId = button.id.replace('Button', '') as TOOLS;
+        if (!Object.values(TOOLS).includes(toolId)) {
+          throw new Error("Invalid tool type from button");
+        }
+        this.selectedTool = toolId;
       });
     });
   }
@@ -52,7 +60,7 @@ export class ToolManager {
   }
 
   // New method to handle tool usage
-  useTool(cell, toolId, x, y, gameGrid) {
+  useTool(cell: GridCell, toolId: TOOLS, x: number, y: number, gameGrid: GridCell[][]) {
     switch (toolId) {
       case 'wateringCan':
         // Water the clicked cell
@@ -76,24 +84,24 @@ export class ToolManager {
         });
         break;
 
-      case 'lavenderButton':
+      case TOOLS.LAVENDER:
         if (!cell.hasPlant()) {
-          cell.plantFlower('lavender');
+          cell.plantFlower(FLOWER_TYPES.LAVENDER);
         }
         break;
-      case 'roseButton':
+      case TOOLS.ROSE:
         if (!cell.hasPlant()) {
-          cell.plantFlower('rose');
+          cell.plantFlower(FLOWER_TYPES.ROSE);
         }
         break;
-      case 'sunflowerButton':
+      case TOOLS.SUNFLOWER:
         if (!cell.hasPlant()) {
-          cell.plantFlower('sunflower');
+          cell.plantFlower(FLOWER_TYPES.SUNFLOWER);
         }
         break;
-      case 'hydroangeaButton':
+      case TOOLS.HYDROANGEA:
         if (!cell.hasPlant()) {
-          cell.plantFlower('hydroangea');
+          cell.plantFlower(FLOWER_TYPES.HYDROANGEA);
         }
         break;
     }

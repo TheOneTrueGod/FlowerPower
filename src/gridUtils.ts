@@ -1,7 +1,7 @@
 
 // Helper function to get adjacent coordinates
-export function getAdjacentCoords(x, y, gameGrid) {
-	const coords = [];
+export function getAdjacentCoords(x: number, y: number, gameGrid: any[][]): [number, number][] {
+	const coords: [number, number][] = [];
 	for (let dx = -1; dx <= 1; dx++) {
 		for (let dy = -1; dy <= 1; dy++) {
 			if (dx === 0 && dy === 0) continue;

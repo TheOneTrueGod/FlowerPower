@@ -4,7 +4,12 @@ export const PLANT_EFFECT_TYPES = {
 }
 
 export default class PlantEffect {
-  constructor(sourceX, sourceY, effectType, effectValue) {
+  sourceX: number;
+  sourceY: number;
+  effectType: string;
+  effectValue: number;
+
+  constructor(sourceX: number, sourceY: number, effectType: string, effectValue: number) {
     this.sourceX = sourceX;
     this.sourceY = sourceY;
     this.effectType = effectType;

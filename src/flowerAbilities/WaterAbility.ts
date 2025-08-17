@@ -1,4 +1,4 @@
-import { STATES } from "../flowers.js";
+import { FLOWER_STATES } from "../flowers/flowers.js";
 import { BaseFlowerAbility } from "./BaseFlowerAbility.js";
 
 export class WaterAbility extends BaseFlowerAbility {
@@ -9,7 +9,7 @@ export class WaterAbility extends BaseFlowerAbility {
 	onRemove(x, y, gameGrid, plantState) {
 	}
 	onAdd(x, y, gameGrid, plantState) {
-		if (plantState === STATES.BLOOMING) {
+		if (plantState === FLOWER_STATES.BLOOMING) {
 			// Water all cells in the same row and column
 			const WATER_AMOUNT = 5;
 

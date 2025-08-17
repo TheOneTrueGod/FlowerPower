@@ -1,16 +1,14 @@
 {
-  "name": "flowerpower",
+  "name": "name",
+  "description": "description",
+  "authors": "author",
   "version": "1.0.0",
-  "private": true,
-  "description": "Serve index.html via Python http.server on localhost:3333 and open the browser",
-  "scripts": {
-    "start": "start \"\" cmd /c \"timeout /t 1 >nul & start http://localhost:3333\" & (py -m http.server 3333 --bind 127.0.0.1 || python -m http.server 3333 --bind 127.0.0.1 || python3 -m http.server 3333 --bind 127.0.0.1)",
-    "build": "tsc",
-    "build:watch": "tsc --watch",
-    "dev": "tsc --watch & npm start"
-  },
+  "main": "dist/app.js",
   "devDependencies": {
-    "@types/node": "^24.3.0",
-    "typescript": "^5.9.2"
+    "tsc-watch": "^6.2.1",
+    "typescript": "^4.0.0"
+  },
+  "scripts": {
+    "start": "tsc-watch --onSuccess \"php -S localhost:8000\""
   }
 }
